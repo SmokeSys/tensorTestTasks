@@ -1,5 +1,6 @@
 from .base_page import BasePage
 from .locators import MainPageLocators
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
 class MainPage(BasePage): 
@@ -13,15 +14,37 @@ class MainPage(BasePage):
         self.browser.find_element(*MainPageLocators.SEARCH).send_keys(text)
 
     def is_suggest_is_enabled(self):
-        assert self.browser.find_element(*MainPageLocators.SUGGEST).is_enabled, "Suggest not enabled"
+        try: 
+            self.browser.find_element(*MainPageLocators.SUGGEST)
+            return True
+        except NoSuchElementException: 
+            print("Suggest not active or doesnt exist")
+            return False
+
+    def is_suggest_is_displayed(self):
+        try: 
+            el = self.browser.find_element(*MainPageLocators.SUGGEST)
+            if el.is_displayed:
+                return True
+            return False
+        except NoSuchElementException: 
+            print("Suggest not active or doesnt exist")
+            return False
 
     def send_enter_to_search(self):
         self.browser.find_element(*MainPageLocators.SEARCH).send_keys(Keys.ENTER)
     
+    #Проверяет наличие строки в ссылке
     def check_contain_in_result(self, what):
-        results = self.browser.find_elements(*MainPageLocators.SEARCH_RESULT_HREF)
+        results = self.browser.find_elements(*MainPageLocators.SEARCHRESULTHREF)
+        i = 0        
         for result in results:
-            assert what in result.get_attribute("href"), f"Ссылка не содержит {what}"
+            if i == 5: break
+            assert what in result.get_attribute("href"), f"Не все ссылки содержат {what}"
+            i += 1
+
+
+
     
 
             
