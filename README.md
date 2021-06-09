@@ -1,1 +1,2 @@
-# tensorTestTasks
+# TestForTensor:
+pip install req.txt
